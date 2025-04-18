@@ -1,41 +1,81 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>GreenInfer Dashboard</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>Sustainability Dashboard</h1>
-        
-        <div class="metrics">
-            <div class="metric-card" id="carbon-savings">
-                <h3>Projected Carbon Savings</h3>
-                <div class="chart" id="carbonChart"></div>
-            </div>
-            
-            <div class="metric-card" id="energy-usage">
-                <h3>Energy Consumption</h3>
-                <div class="chart" id="energyChart"></div>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Emissions Visualization -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Carbon Emissions Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="emissionsChart"></canvas>
+                </div>
             </div>
         </div>
         
-        <div class="recommendations">
-            <h2>Optimization Recommendations</h2>
-            <table id="recommendationsTable">
-                <thead>
-                    <tr>
-                        <th>Recommendation</th>
-                        <th>Impact</th>
-                        <th>Effort</th>
-                        <th>Savings</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Dynamically populated -->
-                </tbody>
-            </table>
+        <!-- Quick Actions -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Optimization Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recommendationsAccordion">
+                        {% for rec in recommendations %}
+                        <div class="card mb-2">
+                            <div class="card-header">
+                                <button class="btn btn-link" data-toggle="collapse" 
+                                    data-target="#rec{{ loop.index }}">
+                                    {{ rec.recommendation }} ({{ rec.impact }}%)
+                                </button>
+                            </div>
+                            <div id="rec{{ loop.index }}" class="collapse">
+                                <div class="card-body">
+                                    <p>{{ rec.description }}</p>
+                                    <button class="btn btn-sm btn-primary implement-btn"
+                                        data-rec-id="{{ rec.id }}">
+                                        Implement
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize emissions chart
+    const ctx = document.getElementById('emissionsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ timestamps|tojson }},
+            datasets: [{
+                label: 'Carbon Emissions (kgCO2e)',
+                data: {{ emissions_data|tojson }},
+                borderColor: '#4CAF50',
+                tension: 0.1
+            }]
+        }
+    });
+    
+    // Implementation handling
+    document.querySelectorAll('.implement-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const response = await fetch(`/recommendations/implement/${btn.dataset.recId}`, {
+                method: 'POST'
+            });
+            // Update UI
+        });
+    });
+</script>
+{% endblock %}
