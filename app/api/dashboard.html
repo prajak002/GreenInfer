@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GreenInfer Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sustainability Dashboard</h1>
+        
+        <div class="metrics">
+            <div class="metric-card" id="carbon-savings">
+                <h3>Projected Carbon Savings</h3>
+                <div class="chart" id="carbonChart"></div>
+            </div>
+            
+            <div class="metric-card" id="energy-usage">
+                <h3>Energy Consumption</h3>
+                <div class="chart" id="energyChart"></div>
+            </div>
+        </div>
+        
+        <div class="recommendations">
+            <h2>Optimization Recommendations</h2>
+            <table id="recommendationsTable">
+                <thead>
+                    <tr>
+                        <th>Recommendation</th>
+                        <th>Impact</th>
+                        <th>Effort</th>
+                        <th>Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
